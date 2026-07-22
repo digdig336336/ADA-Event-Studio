@@ -1,3 +1,6 @@
+
+
+
 <template>
   <v-container class="pa-8">
     <div v-if="!auctionFinished">
@@ -5,59 +8,65 @@
        📦 オークション
       </h1>
 
-          <v-card class="pa-6">
-          
-             <div class="text-h4">
-              {{ items[currentItemIndex].name }}
-            </div>
+<v-card class="pa-6">
 
-          <div class="text-h2 my-6">
-            ¥{{ price }}
-          </div>
+  <template v-if="auctionStore.currentItem">
 
-      <v-row>
+    <div class="text-h4">
+      {{ auctionStore.currentItem.name }}
+    </div>
 
-        <v-col cols="6" md="3">
-          <v-btn
-           block
-            color="primary"
-            @click="addPrice(500)"
-          >
-           +500
-          </v-btn>
-        </v-col>
+    <div class="text-h2 my-6">
+      ¥{{ auctionStore.currentItem.currentPrice }}
+    </div>
 
-        <v-col cols="6" md="3">
-          <v-btn
-           block
-            color="primary"
-            @click="addPrice(1000)"
-          >
-           +1000
-          </v-btn>
-        </v-col>
+  </template>
 
-        <v-col cols="6" md="3">
-          <v-btn
-           block
-            color="primary"
-            @click="addPrice(5000)"
-          >
-           +5000
-          </v-btn>
-        </v-col>
+  <v-row>
 
-        <v-col cols="6" md="3">
-          <v-btn
-            block
-            color="error"
-            @click="sold"
-          >
-           SOLD
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-card>
+    <v-col cols="6" md="3">
+      <v-btn
+        block
+        color="primary"
+        @click="auctionStore.bid(500)"
+      >
+        +500
+      </v-btn>
+    </v-col>
+
+    <v-col cols="6" md="3">
+      <v-btn
+        block
+        color="primary"
+        @click="auctionStore.bid(1000)"
+      >
+        +1000
+      </v-btn>
+    </v-col>
+
+    <v-col cols="6" md="3">
+      <v-btn
+        block
+        color="primary"
+        @click="auctionStore.bid(5000)"
+      >
+        +5000
+      </v-btn>
+    </v-col>
+
+    <v-col cols="6" md="3">
+      <v-btn
+        block
+        color="error"
+        @click="auctionStore.sold()"
+      >
+        SOLD
+      </v-btn>
+    </v-col>
+
+  </v-row>
+
+</v-card>
     </div>
 
   <div v-else>
@@ -71,31 +80,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useAuctionStore } from "@/stores/auctionStore"
 
-import { auctionItems } from "@/data/auctionItems"
-
-const items = ref(auctionItems)
-
-const currentItemIndex = ref(0)
-
-const price = ref(items[currentItemIndex.value].startPrice)
+const auctionStore = useAuctionStore()
 
 const auctionFinished = ref(false)
 
-function addPrice(amount) {
-  price.value += amount
-}
-
-function sold() {
-  if (currentItemIndex.value < items.length - 1) {
-
-    currentItemIndex.value++
-    price.value = items[currentItemIndex.value].startPrice
-
-  } else {
-
-    auctionFinished.value = true
-
-  }
-}
 </script>
