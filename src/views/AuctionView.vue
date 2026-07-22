@@ -72,20 +72,9 @@
 <script setup>
 import { ref } from 'vue'
 
-const items = [
-  {
-    name: 'ブセファランドラ',
-    startPrice: 10000,
-  },
-  {
-    name: 'アヌビアス・ナナ',
-    startPrice: 5000,
-  },
-  {
-    name: 'エキノドルス・ルビン',
-    startPrice: 3000,
-  },
-]
+import { auctionItems } from "@/data/auctionItems"
+
+const items = ref(auctionItems)
 
 const currentItemIndex = ref(0)
 
