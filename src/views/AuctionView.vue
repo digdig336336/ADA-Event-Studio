@@ -4,9 +4,28 @@
 <template>
   <v-container class="pa-8">
     <div v-if="auctionStore.status !== 'finished'">
-      <h1 class="text-h3 mb-6">
-       📦 オークション
-      </h1>
+      <v-row class="mb-4" align="center">
+
+  <v-col>
+    <h1 class="text-h3">
+      📦 オークション
+    </h1>
+  </v-col>
+
+  <v-col class="text-right">
+
+    <div class="text-h6">
+      商品 {{ auctionStore.currentItemNumber }} /
+      {{ auctionStore.totalItems }}
+    </div>
+
+    <div class="text-subtitle-1">
+      残り {{ auctionStore.remainingItems }} 件
+    </div>
+
+  </v-col>
+
+</v-row>
 
 <v-card class="pa-6">
 
@@ -17,8 +36,30 @@
     </div>
 
     <div class="text-h2 my-6">
-      ¥{{ auctionStore.currentItem.currentPrice }}
+      ¥{{ auctionStore.currentItem.currentPrice.toLocaleString() }}
     </div>
+<v-row class="my-4">
+  <v-col cols="8">
+    <v-text-field
+       ref="priceField"
+      v-model="inputPrice"
+      label="価格を入力"
+      type="text"
+      hide-details
+      @keyup.enter="setPrice"
+    />
+  </v-col>
+
+  <v-col cols="4">
+    <v-btn
+      block
+      color="secondary"
+      @click="setPrice"
+    >
+      設定
+    </v-btn>
+  </v-col>
+</v-row>
 
   </template>
 
@@ -40,7 +81,7 @@
         color="primary"
         @click="auctionStore.bid(1000)"
       >
-        +1000
+        +1,000
       </v-btn>
     </v-col>
 
@@ -50,22 +91,36 @@
         color="primary"
         @click="auctionStore.bid(5000)"
       >
-        +5000
+        +5,000
       </v-btn>
     </v-col>
+</v-row>
+  <v-row class="mt-4">
 
-    <v-col cols="6" md="3">
-      <v-btn
+  <v-col cols="6">
+    <v-btn
   block
-  color="error"
-  @click="dialog = true"
+  color="warning"
+  prepend-icon="mdi-undo"
+  :disabled="false"
+  @click="testUndo"
 >
-  SOLD
+  UNDO
 </v-btn>
-    </v-col>
+  </v-col>
 
-  </v-row>
+  <v-col cols="6">
+    <v-btn
+      block
+      color="error"
+      prepend-icon="mdi-gavel"
+      @click="dialog = true"
+    >
+      SOLD
+    </v-btn>
+  </v-col>
 
+</v-row>
 </v-card>
 
 <v-dialog v-model="dialog" max-width="500">
@@ -119,13 +174,36 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, nextTick } from "vue"
+
+const inputPrice = ref("")
+const priceField = ref(null)
+
+
 import { useAuctionStore } from "@/stores/auctionStore"
 
 const auctionStore = useAuctionStore()
 
 const dialog = ref(false)
 const bidderName = ref("")
+
+
+
+
+
+async function setPrice() {
+  const price = Number(inputPrice.value)
+
+  if (isNaN(price) || price < 0) return
+
+  auctionStore.setPrice(price)
+
+  inputPrice.value = ""
+
+  await nextTick()
+
+  priceField.value.focus()
+}
 
 function saveSold() {
 
@@ -136,4 +214,14 @@ function saveSold() {
   dialog.value = false
 
 }
+
+function testUndo() {
+  console.log("UNDOボタンが押された")
+  console.log(typeof auctionStore.undo)
+
+  auctionStore.undo()
+}
+
+
+
 </script>
