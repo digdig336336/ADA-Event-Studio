@@ -1,5 +1,8 @@
 import { auctionItems } from "@/data/auctionItems"
 import { defineStore } from "pinia"
+import { bid as bidFirestore,
+  setCurrentPrice } from "@/services/auctionService"
+
 
 export const useAuctionStore = defineStore("auction", {
   state: () => ({
@@ -38,20 +41,24 @@ export const useAuctionStore = defineStore("auction", {
         this.items = items
       },
 
-    bid(amount) {
-       if (!this.currentItem) return
+   async bid(amount) {
 
-      this.saveUndoState()
+  console.log("bid開始", amount)
 
-      this.currentItem.currentPrice += amount
-      },
-
-    setPrice(price) {
   if (!this.currentItem) return
 
-  this.saveUndoState()
+  console.log("商品ID", this.currentItem.id)
 
-  this.currentItem.currentPrice = price
+  await bidFirestore(this.currentItem.id, amount)
+
+  console.log("Firestore更新完了")
+
+},
+
+   async setPrice(price) {
+  if (!this.currentItem) return
+
+  await setCurrentPrice(this.currentItem.id, price)
 },
 
     sold(bidder = "") {

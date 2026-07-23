@@ -68,7 +68,7 @@
       <v-btn
         block
         color="primary"
-        @click="auctionStore.bid(500)"
+        @click="testBid"
       >
         +500
       </v-btn>
@@ -173,30 +173,16 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from "vue"
-import { getAuction } from "@/services/auctionService"
+import { ref, nextTick, onMounted, onUnmounted } from "vue"
+
 import { useAuctionStore } from "@/stores/auctionStore"
-import { getAuctionItems } from "@/services/auctionService"
+
+import { subscribeAuctionItems } from "@/services/auctionService"
 
 
 const auctionStore = useAuctionStore()
-
-onMounted(async () => {
-  const items = await getAuctionItems()
-
-  console.log("Firestore:", items)
-
-  auctionStore.setItems(items)
-
-  console.log("Store:", auctionStore.items)
-  console.log("Current:", auctionStore.currentItem)
-})
-
 const inputPrice = ref("")
 const priceField = ref(null)
-
-
-
 const dialog = ref(false)
 const bidderName = ref("")
 
@@ -234,7 +220,24 @@ function testUndo() {
 
   auctionStore.undo()
 }
+async function testBid() {
+  console.log("ボタンOK")
 
+  await auctionStore.bid(500)
 
+  console.log("bid終了")
+}
+
+let unsubscribe
+
+onMounted(() => {
+  unsubscribe = subscribeAuctionItems((items) => {
+    auctionStore.setItems(items)
+  })
+})
+
+onUnmounted(() => {
+  if (unsubscribe) unsubscribe()
+})
 
 </script>
