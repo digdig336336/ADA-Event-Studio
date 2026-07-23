@@ -78,7 +78,7 @@ const items = ref(auctionItems)
 
 const currentItemIndex = ref(0)
 
-const price = ref(items[currentItemIndex.value].startPrice)
+const price = ref(items.value[currentItemIndex.value].startPrice)
 
 const auctionFinished = ref(false)
 
@@ -90,7 +90,7 @@ function sold() {
   if (currentItemIndex.value < items.length - 1) {
 
     currentItemIndex.value++
-    price.value = items[currentItemIndex.value].startPrice
+    price.value = items.value[currentItemIndex.value].startPrice
 
   } else {
 
