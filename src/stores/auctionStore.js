@@ -1,27 +1,17 @@
-import { defineStore } from 'pinia'
+import { auctionItems } from "@/data/auctionItems"
+import { defineStore } from "pinia"
 
-export const useAuctionStore = defineStore('auction', {
+export const useAuctionStore = defineStore("auction", {
   state: () => ({
-    status: 'preparing',
-    currentItemIndex: 0,
-    items: [
-      {
-        id: 1,
-        number: 1,
-        name: 'ADA ソーラーRGBⅡ',
-        startPrice: 1000,
-        currentPrice: 1000,
-        soldPrice: null,
-        bidder: '',
-        status: 'waiting'
-      }
-    ]
-  }),
+  items: auctionItems,
+  currentItemIndex: 0,
+  status: "running",
+}),
 
   getters: {
     currentItem(state) {
       return state.items[state.currentItemIndex] ?? null
-    }
+    },
   },
 
   actions: {
@@ -40,15 +30,17 @@ export const useAuctionStore = defineStore('auction', {
 
       this.currentItem.soldPrice = this.currentItem.currentPrice
       this.currentItem.bidder = bidder
-      this.currentItem.status = 'sold'
+      this.currentItem.status = "sold"
+
+      this.nextItem()
     },
 
     nextItem() {
-      if (this.currentItemIndex < this.items.length - 1) {
-        this.currentItemIndex++
-      } else {
-        this.status = 'finished'
-      }
-    }
+  if (this.currentItemIndex < this.items.length - 1) {
+    this.currentItemIndex++
+  } else {
+    this.status = "finished"
   }
+}
+  },
 })
