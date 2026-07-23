@@ -33,6 +33,11 @@ export const useAuctionStore = defineStore("auction", {
   },
 
   actions: {
+
+    setItems(items) {
+        this.items = items
+      },
+
     bid(amount) {
        if (!this.currentItem) return
 

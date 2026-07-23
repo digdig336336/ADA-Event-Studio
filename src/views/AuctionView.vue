@@ -1,6 +1,5 @@
 
 
-
 <template>
   <v-container class="pa-8">
     <div v-if="auctionStore.status !== 'finished'">
@@ -36,7 +35,7 @@
     </div>
 
     <div class="text-h2 my-6">
-      ¥{{ auctionStore.currentItem.currentPrice.toLocaleString() }}
+      ¥{{ auctionStore.currentItem?.currentPrice?.toLocaleString?.() ?? "価格なし" }}
     </div>
 <v-row class="my-4">
   <v-col cols="8">
@@ -174,15 +173,29 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from "vue"
+import { ref, nextTick, onMounted } from "vue"
+import { getAuction } from "@/services/auctionService"
+import { useAuctionStore } from "@/stores/auctionStore"
+import { getAuctionItems } from "@/services/auctionService"
+
+
+const auctionStore = useAuctionStore()
+
+onMounted(async () => {
+  const items = await getAuctionItems()
+
+  console.log("Firestore:", items)
+
+  auctionStore.setItems(items)
+
+  console.log("Store:", auctionStore.items)
+  console.log("Current:", auctionStore.currentItem)
+})
 
 const inputPrice = ref("")
 const priceField = ref(null)
 
 
-import { useAuctionStore } from "@/stores/auctionStore"
-
-const auctionStore = useAuctionStore()
 
 const dialog = ref(false)
 const bidderName = ref("")
